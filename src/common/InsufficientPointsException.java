@@ -5,4 +5,13 @@ package common;
  *
  */
 public class InsufficientPointsException extends Exception {
+    String message;
+    public InsufficientPointsException(String message){
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

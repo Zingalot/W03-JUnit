@@ -18,14 +18,12 @@ public class LoyaltyCardOwner implements ILoyaltyCardOwner {
 
     @Override
     public String getEmail() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.email;
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.name;
     }
 
 }

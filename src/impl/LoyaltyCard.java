@@ -9,33 +9,53 @@ import interfaces.ILoyaltyCardOwner;
  *
  */
 public class LoyaltyCard implements ILoyaltyCard {
+    private ILoyaltyCardOwner loyaltyCardOwner;
+    private int numberOfPoints;
+    private int numberOfUses;
+
+    public LoyaltyCard(ILoyaltyCardOwner loyaltyCardOwner){
+        this.loyaltyCardOwner = loyaltyCardOwner;
+        this.numberOfPoints = 0;
+    }
 
     @Override
     public ILoyaltyCardOwner getOwner() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.loyaltyCardOwner;
     }
 
     @Override
     public int getNumberOfUses() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.numberOfUses;
     }
 
     @Override
     public int getNumberOfPoints() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.numberOfPoints;
     }
 
     @Override
     public void addPoints(int points) {
-        // TODO Auto-generated method stub
+        if(points>0) {
+            this.numberOfPoints += points;
+            this.numberOfUses++;
+        }
     }
 
     @Override
     public void usePoints(int points) throws InsufficientPointsException {
-        // TODO Auto-generated method stub
+        if(this.numberOfPoints >= points && points >= 0){
+            this.numberOfPoints -= points;
+            this.numberOfUses++;
+        }
+        else {
+            if(points < 0){
+                throw new InsufficientPointsException("Invalid Number of Points to use");
+            }
+            else{
+                throw new InsufficientPointsException("Insufficient Points");
+            }
+
+        }
     }
 
 }

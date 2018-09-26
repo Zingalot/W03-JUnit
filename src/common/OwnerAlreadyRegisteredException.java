@@ -5,4 +5,13 @@ package common;
  *
  */
 public class OwnerAlreadyRegisteredException extends Exception {
+    String message;
+    public OwnerAlreadyRegisteredException(String message){
+        this.message = message;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

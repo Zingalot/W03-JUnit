@@ -8,25 +8,53 @@ import interfaces.ILoyaltyCard;
 import interfaces.ILoyaltyCardOperator;
 import interfaces.ILoyaltyCardOwner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents a simple loyalty card operator.
  *
  */
 public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyaltyCardOperator {
+    private List<ILoyaltyCardOwner> registeredOwners;
+
+    public LoyaltyCardOperator(){
+        this.registeredOwners = new ArrayList<>();
+    }
 
     @Override
     public void registerOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerAlreadyRegisteredException {
-        // TODO Auto-generated method stub
+        boolean alreadyRegistered = false;
+        for(int x = 0; x <= this.registeredOwners.size()-1; x++){
+            if(registeredOwners.get(x).getEmail().equals(loyaltyCardOwner.getEmail())){
+                alreadyRegistered = true;
+            }
+        }
+        if(alreadyRegistered){
+            throw new OwnerAlreadyRegisteredException("This email address has already been registered");
+        }else{
+            this.registeredOwners.add(loyaltyCardOwner);
+        }
     }
 
     @Override
     public void unregisterOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
+        boolean unregistered = false;
+        for(int x = 0; x <= this.registeredOwners.size()-1; x++){
+            if(registeredOwners.get(x).getEmail().equals(loyaltyCardOwner.getEmail())){
+                unregistered = true;
+                registeredOwners.remove(x);
+            }
+        }
+        if(!unregistered){
+            throw new OwnerNotRegisteredException("This email address has not been registered before");
+        }
     }
 
     @Override
     public void processMoneyPurchase(String ownerEmail, int pence) throws OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
+        // TODO Rewrite list to a Map or similar to allow for key-value pairs
+        // TODO This allows for owner's points to be kept in the same collection as their registration
     }
 
     @Override
@@ -64,5 +92,4 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
         // TODO Auto-generated method stub
         return null;
     }
-
 }
