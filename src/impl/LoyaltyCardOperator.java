@@ -135,6 +135,7 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
             }
 
         }
+
         return registeredOwners.get(maxEmail).getOwner();
     }
 }
