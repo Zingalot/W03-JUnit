@@ -4,6 +4,7 @@ import common.AbstractFactoryClient;
 import common.InsufficientPointsException;
 import common.OwnerAlreadyRegisteredException;
 import common.OwnerNotRegisteredException;
+import impl.LoyaltyCardOwner;
 import interfaces.ILoyaltyCard;
 import interfaces.ILoyaltyCardOperator;
 import interfaces.ILoyaltyCardOwner;
@@ -183,7 +184,7 @@ public class Tests extends AbstractFactoryClient {
     }
 
     @Test
-    public void loyaltyCardOperatorInvalidUnregistr(){
+    public void loyaltyCardOperatorInvalidUnregister(){
         try{
             operator.unregisterOwner(owner);
             fail("OwnerNotRegisteredException should be thrown");
@@ -195,8 +196,135 @@ public class Tests extends AbstractFactoryClient {
     @Test
     public void loyaltyCardOperatorProcessMoneyPurchase(){
         try{
-            operator.processMoneyPurchase(owner.getEmail(),23456);
+            operator.registerOwner(owner);
+            int currentPoints = operator.getNumberOfPoints(owner.getEmail());
+            operator.processMoneyPurchase(owner.getEmail(),2300);
+            assertEquals(operator.getNumberOfPoints(owner.getEmail()), currentPoints + 23);
         } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorProcessPointsPurchase(){
+        try{
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(),8000);
+            int currentPoints = operator.getNumberOfPoints(owner.getEmail());
+            operator.processPointsPurchase(owner.getEmail(), 40);
+            assertEquals(operator.getNumberOfPoints(owner.getEmail()), currentPoints - 40);
+        } catch(InsufficientPointsException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorGetNumberOfCustomers(){
+        try{
+            operator.registerOwner(owner);
+            assertEquals(operator.getNumberOfCustomers(),1);
+        }
+        catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorGetNumberOfCustomersDuplicate(){
+        try{
+            operator.registerOwner(owner);
+            operator.registerOwner(owner);
+            fail("Should throw OwnerAlreadyRegisteredException");
+        }
+        catch(OwnerAlreadyRegisteredException e){
+            assertEquals(operator.getNumberOfCustomers(),1);
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorOwnerPoints(){
+        try{
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(),1200);
+            assertEquals(operator.getNumberOfPoints(owner.getEmail()),12);
+        } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorUnregisteredOwnerPoints(){
+        try{
+            operator.getNumberOfPoints(owner.getEmail());
+            fail("Should throw OwnerNotRegisteredException");
+        } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorGetTotalPoints(){
+        try {
+            operator.registerOwner(owner);
+            operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
+            operator.processMoneyPurchase(owner.getEmail(),1200);
+            operator.processMoneyPurchase("test2@test.com",3000);
+            assertEquals(operator.getTotalNumberOfPoints(),42);
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorGetUses(){
+        try{
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(),1200);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
+            operator.processMoneyPurchase(owner.getEmail(),3000);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()),2);
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    @Test
+    public void loyaltyCardOperatorMostUsed(){
+        try{
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(),1200);
+            operator.processMoneyPurchase(owner.getEmail(),3000);
+            operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
+            operator.processMoneyPurchase("test2@test.com",3000);
+            assertEquals(operator.getMostUsed(),owner);
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }

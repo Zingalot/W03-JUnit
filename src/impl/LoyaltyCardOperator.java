@@ -9,6 +9,8 @@ import interfaces.ILoyaltyCardOperator;
 import interfaces.ILoyaltyCardOwner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,80 +18,123 @@ import java.util.List;
  *
  */
 public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyaltyCardOperator {
-    private List<ILoyaltyCardOwner> registeredOwners;
+    private HashMap<String,LoyaltyCard> registeredOwners;
+    private HashMap<String,Integer> cardUses;
+    private int numberOfCustomers;
 
     public LoyaltyCardOperator(){
-        this.registeredOwners = new ArrayList<>();
+        this.registeredOwners = new HashMap();
+        this.cardUses = new HashMap();
+        this.numberOfCustomers = 0;
     }
 
     @Override
     public void registerOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerAlreadyRegisteredException {
         boolean alreadyRegistered = false;
-        for(int x = 0; x <= this.registeredOwners.size()-1; x++){
-            if(registeredOwners.get(x).getEmail().equals(loyaltyCardOwner.getEmail())){
-                alreadyRegistered = true;
-            }
+        if(registeredOwners.containsKey(loyaltyCardOwner.getEmail())){
+            alreadyRegistered = true;
         }
+
         if(alreadyRegistered){
             throw new OwnerAlreadyRegisteredException("This email address has already been registered");
         }else{
-            this.registeredOwners.add(loyaltyCardOwner);
+            this.registeredOwners.put(loyaltyCardOwner.getEmail(),new LoyaltyCard(loyaltyCardOwner));
+            this.cardUses.put(loyaltyCardOwner.getEmail(),0);
+            this.numberOfCustomers++;
         }
     }
 
     @Override
     public void unregisterOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerNotRegisteredException {
         boolean unregistered = false;
-        for(int x = 0; x <= this.registeredOwners.size()-1; x++){
-            if(registeredOwners.get(x).getEmail().equals(loyaltyCardOwner.getEmail())){
-                unregistered = true;
-                registeredOwners.remove(x);
-            }
+        if(registeredOwners.containsKey(loyaltyCardOwner.getEmail())){
+            registeredOwners.remove(loyaltyCardOwner.getEmail());
+            cardUses.remove(loyaltyCardOwner.getEmail());
+            unregistered = true;
         }
+
         if(!unregistered){
-            throw new OwnerNotRegisteredException("This email address has not been registered before");
+            throw new OwnerNotRegisteredException("This email address is not registered");
         }
     }
 
     @Override
     public void processMoneyPurchase(String ownerEmail, int pence) throws OwnerNotRegisteredException {
-        // TODO Rewrite list to a Map or similar to allow for key-value pairs
-        // TODO This allows for owner's points to be kept in the same collection as their registration
+        if(!registeredOwners.containsKey(ownerEmail)){
+            throw new OwnerNotRegisteredException("This email address is not registered");
+        }
+        LoyaltyCard cardForUpdate = registeredOwners.get(ownerEmail);
+        cardForUpdate.addPoints(pence/100);
+        registeredOwners.put(ownerEmail,cardForUpdate);
+        Integer useUpdate = cardUses.get(ownerEmail);
+        useUpdate++;
+        cardUses.put(ownerEmail,useUpdate);
+
     }
 
     @Override
     public void processPointsPurchase(String ownerEmail, int pence)
             throws InsufficientPointsException, OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
+        if(!registeredOwners.containsKey(ownerEmail)){
+            throw new OwnerNotRegisteredException("This email address is not registered");
+        }
+        LoyaltyCard cardForUpdate = registeredOwners.get(ownerEmail);
+        cardForUpdate.usePoints(pence);
+        registeredOwners.put(ownerEmail,cardForUpdate);
+        Integer useUpdate = cardUses.get(ownerEmail);
+        useUpdate++;
+        cardUses.put(ownerEmail,useUpdate);
     }
 
     @Override
     public int getNumberOfCustomers() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.numberOfCustomers;
     }
 
     @Override
     public int getTotalNumberOfPoints() {
-        // TODO Auto-generated method stub
-        return 0;
+        int totalPoints = 0;
+        Iterator iterator = registeredOwners.keySet().iterator();
+        while(iterator.hasNext()){
+            totalPoints += registeredOwners.get(iterator.next()).getNumberOfPoints();
+        }
+        return totalPoints;
     }
 
     @Override
     public int getNumberOfPoints(String ownerEmail) throws OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
-        return 0;
+        if(registeredOwners.containsKey(ownerEmail)) {
+            return registeredOwners.get(ownerEmail).getNumberOfPoints();
+        }
+        else {
+            throw new OwnerNotRegisteredException("This email address is not registered");
+        }
     }
 
     @Override
     public int getNumberOfUses(String ownerEmail) throws OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
-        return 0;
+        if(cardUses.containsKey(ownerEmail)) {
+            return cardUses.get(ownerEmail);
+        }
+        else {
+            throw new OwnerNotRegisteredException("This email address is not registered");
+        }
     }
 
     @Override
     public ILoyaltyCardOwner getMostUsed() throws OwnerNotRegisteredException {
-        // TODO Auto-generated method stub
-        return null;
+        int maxUses = 0;
+        String currentEmail = "";
+        String maxEmail = "";
+        Iterator iterator = cardUses.keySet().iterator();
+        while(iterator.hasNext()){
+            currentEmail = (String) iterator.next();
+            if(cardUses.get(currentEmail)> maxUses){
+                maxUses = cardUses.get(currentEmail);
+                maxEmail = currentEmail;
+            }
+
+        }
+        return registeredOwners.get(maxEmail).getOwner();
     }
 }
