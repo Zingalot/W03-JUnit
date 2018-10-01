@@ -508,7 +508,31 @@ public class Tests extends AbstractFactoryClient {
             fail("Should not throw an exception");
         }
     }
-    //TODO Test total points works at 0 total points, and at zero cards/owners
+
+    /**
+     * Tests the edge case in which total points are needed, but no points have
+     * been processed by the system, should return zero.
+     */
+    @Test
+    public void loyaltyCardOperatorGetZeroTotalPoints(){
+        try {
+            operator.registerOwner(owner);
+            operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
+            assertEquals(operator.getTotalNumberOfPoints(),0);
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    /**
+     * Tests the edge case in the total points are needed, but no cards
+     * have been registered. Should return zero
+     */
+    @Test
+    public void loyaltyCardOperatorGetPointsNoCards(){
+        assertEquals(operator.getTotalNumberOfPoints(),0);
+    }
 
     /**
      * Tests the centre case for 'getNumberOfUses', owner is used three times and the number of uses is
@@ -535,8 +559,54 @@ public class Tests extends AbstractFactoryClient {
             fail("Should not throw an exception");
         }
     }
-    //TODO Test that insufficient points purchases do not increment card uses
-    //TODO Test that getUses works at 0 total uses, and 0 total cards/owners
+
+    /**
+     * Tests the edge case in which insufficient or invalid points purchases are made such that
+     * they do not increment the number of uses of a card. Should throw one insufficient points
+     * exception but not increment uses after that.
+     */
+    @Test
+    public void loyaltyCardOperatorInsufficientPointsUses(){
+        try{
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(),1200);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
+            operator.processPointsPurchase(owner.getEmail(),2500);
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(InsufficientPointsException e){
+            try{
+                System.out.println(e.getMessage());
+                assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
+            } catch (OwnerNotRegisteredException d){
+                System.out.println(d.getMessage());
+                fail("Should not throw an exception");
+            }
+
+        }
+    }
+
+    /**
+     * Tests the edge case in which the card has not been used, and ensures that its total uses are
+     * recorded as zero.
+     */
+    @Test
+    public void loyaltyCardOperatorZeroTotalUses(){
+        try{
+            operator.registerOwner(owner);
+            assertEquals(0, operator.getNumberOfUses(owner.getEmail()));
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        } catch(OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
 
     /**
      * Tests the centre case for 'getMostUsed'. Owner is used twice, 'TestTwo' is used once, so owner
@@ -583,7 +653,21 @@ public class Tests extends AbstractFactoryClient {
             fail("Should not throw an exception");
         }
     }
-    //TODO Test the edge case where no cards have been used/registered
+
+    /**
+     * Tests the edge case where no cards have been registered, and mostUsed has been requested.
+     * Should return null as no cards or owners are recognised by the operator, and therefore
+     * cannot be compared to one another.
+     */
+    @Test
+    public void loyaltyCardOperatorMostUsedNoCards(){
+        try{
+            assertNull(operator.getMostUsed());
+        } catch(OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
 
     @After
     public void tearDown(){
