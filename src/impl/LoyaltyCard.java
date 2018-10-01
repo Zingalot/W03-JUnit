@@ -43,7 +43,7 @@ public class LoyaltyCard implements ILoyaltyCard {
 
     @Override
     public void usePoints(int points) throws InsufficientPointsException {
-        if(this.numberOfPoints >= points && points >= 0){
+        if(this.numberOfPoints >= points && points > 0){
             this.numberOfPoints -= points;
             this.numberOfUses++;
         }

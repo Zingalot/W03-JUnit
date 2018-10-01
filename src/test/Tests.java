@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
  * This is a JUnit test class for the loyalty card ADT.
  *
  */
-//TODO Comment all tests and variables
 public class Tests extends AbstractFactoryClient {
 
     private ILoyaltyCardOwner owner;
@@ -29,13 +28,19 @@ public class Tests extends AbstractFactoryClient {
     private String name;
 
 
+    /**
+     * Prints a line to make the output from the testing class clearer
+     */
     @BeforeClass
     public static void organiseOutput(){
         System.out.println();
     }
 
+    /**
+     * Some sample data for tests
+     */
     @Before
-    public void setupOwner(){
+    public void setup(){
         email = "test@test.com";
         name = "Test";
         owner = getFactory().makeLoyaltyCardOwner(email, name);
@@ -51,26 +56,37 @@ public class Tests extends AbstractFactoryClient {
         ILoyaltyCardOwner loyaltyCardOwner = getFactory().makeLoyaltyCardOwner("jon@jon.com", "Jon");
         assertFalse(loyaltyCardOwner == null);
     }
+    //TODO Test for invalid email, add regex to ensure email validity
+    //TODO Test for invalid name (numbers in name etc), use regex to ensure validity
 
+    /**
+     * Tests that the card is created
+     */
     @Test
     public void loyaltyCardCreationNonNull(){
         ILoyaltyCard loyaltyCard = getFactory().makeLoyaltyCard(owner);
         assertFalse(loyaltyCard == null);
     }
 
+    /**
+     * Tests that the operator is created
+     */
     @Test
     public void loyaltyCardOperatorCreationNonNull(){
         ILoyaltyCardOperator loyaltyCardOperator = getFactory().makeLoyaltyCardOperator();
         assertFalse(loyaltyCardOperator == null);
     }
 
+    /**
+     * Tests the centre case for 'getOwner'
+     */
     @Test
     public void loyaltyCardGetOwner(){
         assertEquals(card.getOwner(), owner);
     }
 
     /**
-     *
+     * Tests the centre case for 'addPoints'.
      */
     @Test
     public void loyaltyCardAddPoints(){
@@ -89,8 +105,27 @@ public class Tests extends AbstractFactoryClient {
     }
 
     /**
-     * Tests the centre case for 'usePoints'. The card should have 10 fewer points than before the
-     * points are used.
+     * Tests the edge case that zero points have been added to the card, the value of points on the card
+     * should not change
+     */
+    @Test
+    public void loyaltyCardAddZeroPoints(){
+        card.addPoints(0);
+        assertEquals(0,card.getNumberOfPoints());
+    }
+
+    /**
+     * Tests the edge case that no add/remove points operations have been executed, and that the initial
+     * number of points on a card is zero
+     */
+    @Test
+    public void loyaltyCardGetInitialPoints(){
+        assertEquals(0,card.getNumberOfPoints());
+    }
+
+    /**
+     * Tests the centre case for 'usePoints' and 'getNumberOfPoints'. The card should have 10
+     * fewer points than before the points are used.
      */
     @Test
     public void loyaltyCardUsePoints(){
@@ -117,6 +152,20 @@ public class Tests extends AbstractFactoryClient {
             fail("Should have thrown InsufficientPointsException" );
         }
         catch(InsufficientPointsException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Tests the edge case of trying to use zero points, should not throw an exception, but should
+     * also not change the number of points on the card.
+     */
+    @Test
+    public void loyaltyCardUseZeroPoints(){
+        try{
+            card.usePoints(0);
+            assertEquals(0,card.getNumberOfPoints());
+        } catch(InsufficientPointsException e){
             System.out.println(e.getMessage());
         }
     }
@@ -158,6 +207,14 @@ public class Tests extends AbstractFactoryClient {
             }
         }
         assertEquals(card.getNumberOfUses(),numberOfUses);
+    }
+
+    /**
+     * Tests the edge case where the card has not been used, should be zero uses.
+     */
+    @Test
+    public void loyaltyCardNumberOfUsesZero(){
+        assertEquals(0,card.getNumberOfUses());
     }
 
     /**
@@ -206,6 +263,38 @@ public class Tests extends AbstractFactoryClient {
     }
 
     /**
+     * Tests the edge case of an owner trying to be registered with the same email as an existing owner.
+     * An OwnerAlreadyRegisteredException should be thrown, with a relevant message.
+     */
+    @Test
+    public void loyaltyCardOperatorRegisteredWithSameEmail(){
+        try{
+            operator.registerOwner(owner);
+            operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test@test.com"));
+            fail("Should have thrown OwnerAlreadyRegisteredException");
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+
+        }
+    }
+
+    /**
+     * Tests the edge case of an owner registering with the same name as another owner, but a different
+     * email. This should be allowed as many owners may have the same name, the email needs to be the
+     * unique identifier.
+     */
+    @Test
+    public void loyaltyCardOperatorRegisteredWithSameName(){
+        try{
+            operator.registerOwner(owner);
+            operator.registerOwner(new LoyaltyCardOwner("Test", "test2@test.com"));
+        } catch(OwnerAlreadyRegisteredException e){
+            System.out.println(e.getMessage());
+            fail("Should not have thrown an exception");
+        }
+    }
+
+    /**
      * Tests the centre case of 'unregisterOwner'. Owner is registered and then unregistered.
      */
     @Test
@@ -237,7 +326,8 @@ public class Tests extends AbstractFactoryClient {
     }
 
     /**
-     * Tests the centre case of processMoneyPurchase. Owner should gain 23 points during the purchase
+     * Tests the centre case of processMoneyPurchase and getNumberOfPoints.
+     * Owner should gain 23 points during the purchase
      */
     @Test
     public void loyaltyCardOperatorProcessMoneyPurchase(){
@@ -256,7 +346,37 @@ public class Tests extends AbstractFactoryClient {
     }
 
     /**
-     * Tests the centre case of processPointsPurchase. Owner should spend 40 points during the purchase
+     * Tests the edge case in which a money purchase is attempted with an unregistered card.
+     * Should throw the OwnerNotRegisteredException
+     */
+    @Test
+    public void loyaltyCardOperatorMoneyPurchaseUnregistered(){
+        try{
+            operator.processMoneyPurchase(owner.getEmail(),2300);
+            fail("Should throw OwnerNotRegisteredException");
+        } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Tests the edge case of trying to get the number of points of an unused card.
+     * Should throw an OwnerNotRegisteredException
+     */
+    @Test
+    public void loyaltyCardOperatorGetZeroPoints(){
+        try{
+            operator.getNumberOfPoints(owner.getEmail());
+            fail("Should throw an OwnerNotRegisteredException");
+        } catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Tests the centre case of processPointsPurchase and getNumberOfPoints.
+     * Owner should spend 40 points during the purchase
      */
     @Test
     public void loyaltyCardOperatorProcessPointsPurchase(){
@@ -279,6 +399,20 @@ public class Tests extends AbstractFactoryClient {
     }
 
     /**
+     * Tests the edge case where an unregistered owner attempts to make a points purchase
+     * Should throw an OwnerNotRegisteredException.
+     */
+    @Test
+    public void loyaltyCardOperatorPointsPurchaseUnregistered(){
+        try{
+            operator.processMoneyPurchase(owner.getEmail(),8000);
+            fail("Should throw an OwnerNotRegisteredException");
+        }  catch(OwnerNotRegisteredException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
      * Tests the centre case for counting the number of customers. Two have been registered, so
      * two should be counted
      */
@@ -295,12 +429,20 @@ public class Tests extends AbstractFactoryClient {
             fail("Should not throw an exception");
         }
     }
-    //TODO Test for counting zero customers
 
     /**
+     * Tests the edge case of there being zero customers to count. Should return zero
+     */
+    @Test
+    public void loyaltyCardOperatorGetZeroCustomers(){
+        assertEquals(operator.getNumberOfCustomers(),0);
+    }
+
+    /*
      * Tests the edge case for registering owners where that owner has already been registered. Should
      * return an OwnerAlreadyRegisteredException.
      */
+    /*
     @Test
     public void loyaltyCardOperatorGetNumberOfCustomersDuplicate(){
         try{
@@ -311,13 +453,12 @@ public class Tests extends AbstractFactoryClient {
         catch(OwnerAlreadyRegisteredException e){
             assertEquals(operator.getNumberOfCustomers(),1);
         }
-    }
-    //TODO Test that two owners with the same email cannot be registered (check overwriting too)
+    }*/
 
-    /**
-     * Tests the centre case for 'processMoneyPurchase'. Owner has spend 1200 pence, so should receive
+
+    /*
+     * Tests the centre case for 'getNumberOfPoints'. Owner has spend 1200 pence, so should receive
      * 12 points.
-     */
     @Test
     public void loyaltyCardOperatorOwnerPoints(){
         try{
@@ -331,7 +472,7 @@ public class Tests extends AbstractFactoryClient {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
-    }
+    }*/
 
     /**
      * Tests the edge case of 'getNumberOfPoints' where the owner has not been registered. Should return
@@ -367,6 +508,7 @@ public class Tests extends AbstractFactoryClient {
             fail("Should not throw an exception");
         }
     }
+    //TODO Test total points works at 0 total points, and at zero cards/owners
 
     /**
      * Tests the centre case for 'getNumberOfUses', owner is used three times and the number of uses is
@@ -394,6 +536,7 @@ public class Tests extends AbstractFactoryClient {
         }
     }
     //TODO Test that insufficient points purchases do not increment card uses
+    //TODO Test that getUses works at 0 total uses, and 0 total cards/owners
 
     /**
      * Tests the centre case for 'getMostUsed'. Owner is used twice, 'TestTwo' is used once, so owner
@@ -439,5 +582,15 @@ public class Tests extends AbstractFactoryClient {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
+    }
+    //TODO Test the edge case where no cards have been used/registered
+
+    @After
+    public void tearDown(){
+        email = null;
+        name = null;
+        owner = null;
+        card = null;
+        operator = null;
     }
 }
