@@ -8,23 +8,20 @@ import interfaces.ILoyaltyCard;
 import interfaces.ILoyaltyCardOperator;
 import interfaces.ILoyaltyCardOwner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class represents a simple loyalty card operator.
  *
  */
 public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyaltyCardOperator {
-    private HashMap<String,LoyaltyCard> registeredOwners;
-    private HashMap<String,Integer> cardUses;
+    private LinkedHashMap<String,LoyaltyCard> registeredOwners;
+    private LinkedHashMap<String,Integer> cardUses;
     private int numberOfCustomers;
 
     public LoyaltyCardOperator(){
-        this.registeredOwners = new HashMap();
-        this.cardUses = new HashMap();
+        this.registeredOwners = new LinkedHashMap();
+        this.cardUses = new LinkedHashMap();
         this.numberOfCustomers = 0;
     }
 
