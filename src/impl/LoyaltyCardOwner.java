@@ -8,10 +8,15 @@ import interfaces.ILoyaltyCardOwner;
  */
 public class LoyaltyCardOwner implements ILoyaltyCardOwner {
 
-    String name;
-    String email;
+    private String name;
+    private String email;
 
-    public LoyaltyCardOwner(String name, String email){
+    /**
+     * Creates a new instance of the class.
+     * @param name the name of the owner
+     * @param email the email of the owner
+     */
+    public LoyaltyCardOwner(String name, String email) {
         this.name = name;
         this.email = email;
     }

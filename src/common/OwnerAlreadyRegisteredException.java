@@ -5,8 +5,13 @@ package common;
  *
  */
 public class OwnerAlreadyRegisteredException extends Exception {
-    String message;
-    public OwnerAlreadyRegisteredException(String message){
+    private String message;
+
+    /**
+     * Constructs a new instance of the exception.
+     * @param message A message for the user
+     */
+    public OwnerAlreadyRegisteredException(String message) {
         this.message = message;
     }
 

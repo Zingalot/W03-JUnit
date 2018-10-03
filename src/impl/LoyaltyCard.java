@@ -13,7 +13,11 @@ public class LoyaltyCard implements ILoyaltyCard {
     private int numberOfPoints;
     private int numberOfUses;
 
-    public LoyaltyCard(ILoyaltyCardOwner loyaltyCardOwner){
+    /**
+     * Creates a new instance of the loyalty card.
+     * @param loyaltyCardOwner the owner of the card
+     */
+    public LoyaltyCard(ILoyaltyCardOwner loyaltyCardOwner) {
         this.loyaltyCardOwner = loyaltyCardOwner;
         this.numberOfPoints = 0;
     }
@@ -35,7 +39,7 @@ public class LoyaltyCard implements ILoyaltyCard {
 
     @Override
     public void addPoints(int points) {
-        if(points>0) {
+        if (points > 0) {
             this.numberOfPoints += points;
             this.numberOfUses++;
         }
@@ -43,15 +47,15 @@ public class LoyaltyCard implements ILoyaltyCard {
 
     @Override
     public void usePoints(int points) throws InsufficientPointsException {
-        if(this.numberOfPoints >= points && points > 0){
+        if (this.numberOfPoints >= points && points > 0) {
             this.numberOfPoints -= points;
             this.numberOfUses++;
         }
         else {
-            if(points < 0){
+            if (points < 0) {
                 throw new InsufficientPointsException("Invalid Number of Points to use");
             }
-            else{
+            else {
                 throw new InsufficientPointsException("Insufficient Points");
             }
 

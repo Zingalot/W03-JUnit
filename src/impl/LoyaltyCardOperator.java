@@ -15,11 +15,16 @@ import java.util.*;
  *
  */
 public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyaltyCardOperator {
-    private LinkedHashMap<String,LoyaltyCard> registeredOwners;
-    private LinkedHashMap<String,Integer> cardUses;
+    private LinkedHashMap<String, LoyaltyCard> registeredOwners;
+    private LinkedHashMap<String, Integer> cardUses;
     private int numberOfCustomers;
+    private final int penceModifier = 100;
 
-    public LoyaltyCardOperator(){
+    /**
+     * Creates a new instance of the class.
+     * Also initialises the data structures and variables needed to store data during operation.
+     */
+    public LoyaltyCardOperator() {
         this.registeredOwners = new LinkedHashMap();
         this.cardUses = new LinkedHashMap();
         this.numberOfCustomers = 0;
@@ -28,15 +33,16 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
     @Override
     public void registerOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerAlreadyRegisteredException {
         boolean alreadyRegistered = false;
-        if(registeredOwners.containsKey(loyaltyCardOwner.getEmail())){
+        if (registeredOwners.containsKey(loyaltyCardOwner.getEmail())) {
             alreadyRegistered = true;
         }
 
-        if(alreadyRegistered){
+        if (alreadyRegistered) {
             throw new OwnerAlreadyRegisteredException("This email address has already been registered");
-        }else{
-            this.registeredOwners.put(loyaltyCardOwner.getEmail(),new LoyaltyCard(loyaltyCardOwner));
-            this.cardUses.put(loyaltyCardOwner.getEmail(),0);
+        }
+        else {
+            this.registeredOwners.put(loyaltyCardOwner.getEmail(), new LoyaltyCard(loyaltyCardOwner));
+            this.cardUses.put(loyaltyCardOwner.getEmail(), 0);
             this.numberOfCustomers++;
         }
     }
@@ -44,43 +50,43 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
     @Override
     public void unregisterOwner(ILoyaltyCardOwner loyaltyCardOwner) throws OwnerNotRegisteredException {
         boolean unregistered = false;
-        if(registeredOwners.containsKey(loyaltyCardOwner.getEmail())){
+        if (registeredOwners.containsKey(loyaltyCardOwner.getEmail())) {
             registeredOwners.remove(loyaltyCardOwner.getEmail());
             cardUses.remove(loyaltyCardOwner.getEmail());
             unregistered = true;
         }
 
-        if(!unregistered){
+        if (!unregistered) {
             throw new OwnerNotRegisteredException("This email address is not registered");
         }
     }
 
     @Override
     public void processMoneyPurchase(String ownerEmail, int pence) throws OwnerNotRegisteredException {
-        if(!registeredOwners.containsKey(ownerEmail)){
+        if (!registeredOwners.containsKey(ownerEmail)) {
             throw new OwnerNotRegisteredException("This email address is not registered");
         }
         LoyaltyCard cardForUpdate = registeredOwners.get(ownerEmail);
-        cardForUpdate.addPoints(pence/100);
-        registeredOwners.put(ownerEmail,cardForUpdate);
+        cardForUpdate.addPoints(pence / penceModifier);
+        registeredOwners.put(ownerEmail, cardForUpdate);
         Integer useUpdate = cardUses.get(ownerEmail);
         useUpdate++;
-        cardUses.put(ownerEmail,useUpdate);
+        cardUses.put(ownerEmail, useUpdate);
 
     }
 
     @Override
     public void processPointsPurchase(String ownerEmail, int pence)
             throws InsufficientPointsException, OwnerNotRegisteredException {
-        if(!registeredOwners.containsKey(ownerEmail)){
+        if (!registeredOwners.containsKey(ownerEmail)) {
             throw new OwnerNotRegisteredException("This email address is not registered");
         }
         LoyaltyCard cardForUpdate = registeredOwners.get(ownerEmail);
         cardForUpdate.usePoints(pence);
-        registeredOwners.put(ownerEmail,cardForUpdate);
+        registeredOwners.put(ownerEmail, cardForUpdate);
         Integer useUpdate = cardUses.get(ownerEmail);
         useUpdate++;
-        cardUses.put(ownerEmail,useUpdate);
+        cardUses.put(ownerEmail, useUpdate);
     }
 
     @Override
@@ -92,7 +98,7 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
     public int getTotalNumberOfPoints() {
         int totalPoints = 0;
         Iterator iterator = registeredOwners.keySet().iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             totalPoints += registeredOwners.get(iterator.next()).getNumberOfPoints();
         }
         return totalPoints;
@@ -100,7 +106,7 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
 
     @Override
     public int getNumberOfPoints(String ownerEmail) throws OwnerNotRegisteredException {
-        if(registeredOwners.containsKey(ownerEmail)) {
+        if (registeredOwners.containsKey(ownerEmail)) {
             return registeredOwners.get(ownerEmail).getNumberOfPoints();
         }
         else {
@@ -110,7 +116,7 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
 
     @Override
     public int getNumberOfUses(String ownerEmail) throws OwnerNotRegisteredException {
-        if(cardUses.containsKey(ownerEmail)) {
+        if (cardUses.containsKey(ownerEmail)) {
             return cardUses.get(ownerEmail);
         }
         else {
@@ -124,19 +130,19 @@ public class LoyaltyCardOperator extends AbstractFactoryClient implements ILoyal
         String currentEmail = "";
         String maxEmail = "";
         Iterator iterator = cardUses.keySet().iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             currentEmail = (String) iterator.next();
-            if(cardUses.get(currentEmail)> maxUses){
+            if (cardUses.get(currentEmail) > maxUses) {
                 maxUses = cardUses.get(currentEmail);
                 maxEmail = currentEmail;
             }
 
         }
 
-        if(registeredOwners.containsKey(maxEmail)) {
+        if (registeredOwners.containsKey(maxEmail)) {
             return registeredOwners.get(maxEmail).getOwner();
         }
-        else{
+        else {
             return null;
         }
     }

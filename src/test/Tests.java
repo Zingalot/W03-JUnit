@@ -29,18 +29,18 @@ public class Tests extends AbstractFactoryClient {
 
 
     /**
-     * Prints a line to make the output from the testing class clearer
+     * Prints a line to make the output from the testing class clearer.
      */
     @BeforeClass
-    public static void organiseOutput(){
+    public static void organiseOutput() {
         System.out.println();
     }
 
     /**
-     * Some sample data for tests
+     * Some sample data for tests.
      */
     @Before
-    public void setup(){
+    public void setup() {
         email = "test@test.com";
         name = "Test";
         owner = getFactory().makeLoyaltyCardOwner(email, name);
@@ -56,32 +56,30 @@ public class Tests extends AbstractFactoryClient {
         ILoyaltyCardOwner loyaltyCardOwner = getFactory().makeLoyaltyCardOwner("jon@jon.com", "Jon");
         assertFalse(loyaltyCardOwner == null);
     }
-    //TODO Test for invalid email, add regex to ensure email validity
-    //TODO Test for invalid name (numbers in name etc), use regex to ensure validity
 
     /**
-     * Tests that the card is created
+     * Tests that the card is created.
      */
     @Test
-    public void loyaltyCardCreationNonNull(){
+    public void loyaltyCardCreationNonNull() {
         ILoyaltyCard loyaltyCard = getFactory().makeLoyaltyCard(owner);
         assertFalse(loyaltyCard == null);
     }
 
     /**
-     * Tests that the operator is created
+     * Tests that the operator is created.
      */
     @Test
-    public void loyaltyCardOperatorCreationNonNull(){
+    public void loyaltyCardOperatorCreationNonNull() {
         ILoyaltyCardOperator loyaltyCardOperator = getFactory().makeLoyaltyCardOperator();
         assertFalse(loyaltyCardOperator == null);
     }
 
     /**
-     * Tests the centre case for 'getOwner'
+     * Tests the centre case for 'getOwner'.
      */
     @Test
-    public void loyaltyCardGetOwner(){
+    public void loyaltyCardGetOwner() {
         assertEquals(card.getOwner(), owner);
     }
 
@@ -89,7 +87,7 @@ public class Tests extends AbstractFactoryClient {
      * Tests the centre case for 'addPoints'.
      */
     @Test
-    public void loyaltyCardAddPoints(){
+    public void loyaltyCardAddPoints() {
         card.addPoints(10);
         assertEquals(10, card.getNumberOfPoints());
     }
@@ -99,28 +97,28 @@ public class Tests extends AbstractFactoryClient {
      * negative. Should not make a difference to the number of points.
      */
     @Test
-    public void loyaltyCardAddNegativePoints(){
+    public void loyaltyCardAddNegativePoints() {
         card.addPoints(-20);
         assertEquals(0, card.getNumberOfPoints());
     }
 
     /**
      * Tests the edge case that zero points have been added to the card, the value of points on the card
-     * should not change
+     * should not change.
      */
     @Test
-    public void loyaltyCardAddZeroPoints(){
+    public void loyaltyCardAddZeroPoints() {
         card.addPoints(0);
-        assertEquals(0,card.getNumberOfPoints());
+        assertEquals(0, card.getNumberOfPoints());
     }
 
     /**
      * Tests the edge case that no add/remove points operations have been executed, and that the initial
-     * number of points on a card is zero
+     * number of points on a card is zero.
      */
     @Test
-    public void loyaltyCardGetInitialPoints(){
-        assertEquals(0,card.getNumberOfPoints());
+    public void loyaltyCardGetInitialPoints() {
+        assertEquals(0, card.getNumberOfPoints());
     }
 
     /**
@@ -128,14 +126,14 @@ public class Tests extends AbstractFactoryClient {
      * fewer points than before the points are used.
      */
     @Test
-    public void loyaltyCardUsePoints(){
+    public void loyaltyCardUsePoints() {
         card.addPoints(100);
         int currentPoints = card.getNumberOfPoints();
         try {
             card.usePoints(10);
             assertEquals(currentPoints - 10, card.getNumberOfPoints());
         }
-        catch(InsufficientPointsException e){
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
             fail("Should not have thrown an exception");
         }
@@ -146,12 +144,12 @@ public class Tests extends AbstractFactoryClient {
      * insufficientPointsException.
      */
     @Test
-    public void loyaltyCardUseNegativePoints(){
+    public void loyaltyCardUseNegativePoints() {
         try {
             card.usePoints(-10);
-            fail("Should have thrown InsufficientPointsException" );
+            fail("Should have thrown InsufficientPointsException");
         }
-        catch(InsufficientPointsException e){
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -161,11 +159,12 @@ public class Tests extends AbstractFactoryClient {
      * also not change the number of points on the card.
      */
     @Test
-    public void loyaltyCardUseZeroPoints(){
-        try{
+    public void loyaltyCardUseZeroPoints() {
+        try {
             card.usePoints(0);
-            assertEquals(0,card.getNumberOfPoints());
-        } catch(InsufficientPointsException e){
+            assertEquals(0, card.getNumberOfPoints());
+        }
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -175,12 +174,12 @@ public class Tests extends AbstractFactoryClient {
      * the purchase. Should throw the insufficientPointsException.
      */
     @Test
-    public void loyaltyCardInsufficientPoints(){
-        try{
+    public void loyaltyCardInsufficientPoints() {
+        try {
             card.usePoints(1000);
             fail("Should have thrown InsufficientPointsException");
         }
-        catch( InsufficientPointsException e) {
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
         }
 
@@ -190,38 +189,39 @@ public class Tests extends AbstractFactoryClient {
      * Tests the centre case of 'NumberOfUses' for a card. The loops just create a sample.
      */
     @Test
-    public void loyaltyCardNumberOfUses(){
+    public void loyaltyCardNumberOfUses() {
         int numberOfUses = 0;
-        for(int x = 0; x < 15; x++){
+        for (int x = 0; x < 15; x++) {
             card.addPoints(5);
             numberOfUses++;
-            if(x%5 == 0){
-                try{
+            if (x % 5 == 0) {
+                try {
                     card.usePoints(3);
                     numberOfUses++;
-                } catch(InsufficientPointsException e){
+                }
+                catch (InsufficientPointsException e) {
                     System.out.println(e.getMessage());
                     fail("Should not have thrown an exception");
                 }
 
             }
         }
-        assertEquals(card.getNumberOfUses(),numberOfUses);
+        assertEquals(card.getNumberOfUses(), numberOfUses);
     }
 
     /**
      * Tests the edge case where the card has not been used, should be zero uses.
      */
     @Test
-    public void loyaltyCardNumberOfUsesZero(){
-        assertEquals(0,card.getNumberOfUses());
+    public void loyaltyCardNumberOfUsesZero() {
+        assertEquals(0, card.getNumberOfUses());
     }
 
     /**
      * Tests the centre case of 'getEmail'. Should be equal to 'email'.
      */
     @Test
-    public void loyaltyCardOwnerGetEmail(){
+    public void loyaltyCardOwnerGetEmail() {
         assertEquals(email, owner.getEmail());
     }
 
@@ -229,7 +229,7 @@ public class Tests extends AbstractFactoryClient {
      * Tests the centre case of 'getName'. Should be equal to 'name'.
      */
     @Test
-    public void loyaltyCardOwnerGetName(){
+    public void loyaltyCardOwnerGetName() {
         assertEquals(name, owner.getName());
     }
 
@@ -237,10 +237,11 @@ public class Tests extends AbstractFactoryClient {
      * Tests the centre case of 'registerOwner', should not throw any exceptions.
      */
     @Test
-    public void loyaltyCardOperatorRegisterOwner(){
-        try{
+    public void loyaltyCardOperatorRegisterOwner() {
+        try {
             operator.registerOwner(owner);
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -251,12 +252,13 @@ public class Tests extends AbstractFactoryClient {
      * OwnerAlreadyRegisteredException.
      */
     @Test
-    public void loyaltyCardOperatorAlreadyRegistered(){
-        try{
+    public void loyaltyCardOperatorAlreadyRegistered() {
+        try {
             operator.registerOwner(owner);
             operator.registerOwner(owner);
             fail("Should throw OwnerAlreadyRegisteredException");
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
         }
 
@@ -267,12 +269,13 @@ public class Tests extends AbstractFactoryClient {
      * An OwnerAlreadyRegisteredException should be thrown, with a relevant message.
      */
     @Test
-    public void loyaltyCardOperatorRegisteredWithSameEmail(){
-        try{
+    public void loyaltyCardOperatorRegisteredWithSameEmail() {
+        try {
             operator.registerOwner(owner);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test@test.com"));
             fail("Should have thrown OwnerAlreadyRegisteredException");
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
 
         }
@@ -284,11 +287,12 @@ public class Tests extends AbstractFactoryClient {
      * unique identifier.
      */
     @Test
-    public void loyaltyCardOperatorRegisteredWithSameName(){
-        try{
+    public void loyaltyCardOperatorRegisteredWithSameName() {
+        try {
             operator.registerOwner(owner);
             operator.registerOwner(new LoyaltyCardOwner("Test", "test2@test.com"));
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not have thrown an exception");
         }
@@ -298,14 +302,16 @@ public class Tests extends AbstractFactoryClient {
      * Tests the centre case of 'unregisterOwner'. Owner is registered and then unregistered.
      */
     @Test
-    public void loyaltyCardOperatorUnregister(){
-        try{
+    public void loyaltyCardOperatorUnregister() {
+        try {
             operator.registerOwner(owner);
             operator.unregisterOwner(owner);
-        } catch(OwnerNotRegisteredException e){
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch (OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -316,30 +322,68 @@ public class Tests extends AbstractFactoryClient {
      * an OwnerNotRegisteredException.
      */
     @Test
-    public void loyaltyCardOperatorInvalidUnregister(){
-        try{
+    public void loyaltyCardOperatorInvalidUnregister() {
+        try {
             operator.unregisterOwner(owner);
             fail("OwnerNotRegisteredException should be thrown");
-        } catch(OwnerNotRegisteredException e){
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
         }
     }
 
     /**
-     * Tests the centre case of processMoneyPurchase and getNumberOfPoints.
-     * Owner should gain 23 points during the purchase
+     * Tests the edge case of trying to get the number of points of an unregistered card.
+     * Should throw an OwnerNotRegisteredException.
      */
     @Test
-    public void loyaltyCardOperatorProcessMoneyPurchase(){
-        try{
+    public void loyaltyCardOperatorGetUnregisteredPoints() {
+        try {
+            operator.getNumberOfPoints(owner.getEmail());
+            fail("Should throw an OwnerNotRegisteredException");
+        }
+        catch (OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Tests the edge case of trying to get the number of points of an unused card.
+     * Should return zero.
+     */
+    @Test
+    public void loyaltyCardOperatorGetUnusedPoints() {
+        try {
             operator.registerOwner(owner);
-            int currentPoints = operator.getNumberOfPoints(owner.getEmail());
-            operator.processMoneyPurchase(owner.getEmail(),2300);
-            assertEquals(operator.getNumberOfPoints(owner.getEmail()), currentPoints + 23);
-        } catch(OwnerNotRegisteredException e){
+            assertEquals(0, operator.getNumberOfPoints(owner.getEmail()));
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    /**
+     * Tests the centre case of processMoneyPurchase and getNumberOfPoints.
+     * Owner should gain 23 points during the purchase.
+     */
+    @Test
+    public void loyaltyCardOperatorProcessMoneyPurchase() {
+        try {
+            operator.registerOwner(owner);
+            int currentPoints = operator.getNumberOfPoints(owner.getEmail());
+            operator.processMoneyPurchase(owner.getEmail(), 2300);
+            assertEquals(operator.getNumberOfPoints(owner.getEmail()), currentPoints + 23);
+        }
+        catch (OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -347,52 +391,65 @@ public class Tests extends AbstractFactoryClient {
 
     /**
      * Tests the edge case in which a money purchase is attempted with an unregistered card.
-     * Should throw the OwnerNotRegisteredException
+     * Should throw the OwnerNotRegisteredException.
      */
     @Test
-    public void loyaltyCardOperatorMoneyPurchaseUnregistered(){
-        try{
-            operator.processMoneyPurchase(owner.getEmail(),2300);
+    public void loyaltyCardOperatorMoneyPurchaseUnregistered() {
+        try {
+            operator.processMoneyPurchase(owner.getEmail(), 2300);
             fail("Should throw OwnerNotRegisteredException");
-        } catch(OwnerNotRegisteredException e){
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
         }
     }
-
-    /**
-     * Tests the edge case of trying to get the number of points of an unused card.
-     * Should throw an OwnerNotRegisteredException
-     */
-    @Test
-    public void loyaltyCardOperatorGetZeroPoints(){
-        try{
-            operator.getNumberOfPoints(owner.getEmail());
-            fail("Should throw an OwnerNotRegisteredException");
-        } catch(OwnerNotRegisteredException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
 
     /**
      * Tests the centre case of processPointsPurchase and getNumberOfPoints.
-     * Owner should spend 40 points during the purchase
+     * Owner should spend 40 points during the purchase.
      */
     @Test
-    public void loyaltyCardOperatorProcessPointsPurchase(){
-        try{
+    public void loyaltyCardOperatorProcessPointsPurchase() {
+        try {
             operator.registerOwner(owner);
-            operator.processMoneyPurchase(owner.getEmail(),8000);
+            operator.processMoneyPurchase(owner.getEmail(), 8000);
             int currentPoints = operator.getNumberOfPoints(owner.getEmail());
             operator.processPointsPurchase(owner.getEmail(), 40);
             assertEquals(operator.getNumberOfPoints(owner.getEmail()), currentPoints - 40);
-        } catch(InsufficientPointsException e){
+        }
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e){
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+    }
+
+    /**
+     * Tests the edge case where an insufficient number of points exist on the card to make a purchase with.
+     */
+    @Test
+    public void loyaltyCardOperatorProcessInsufficientPointsPurchase() {
+        try {
+            operator.registerOwner(owner);
+            operator.processMoneyPurchase(owner.getEmail(), 15);
+            operator.processPointsPurchase(owner.getEmail(), 40);
+            fail("Should have thrown an InsufficientPointsException");
+        }
+        catch (InsufficientPointsException e) {
+            System.out.println(e.getMessage());
+        }
+        catch (OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -403,89 +460,40 @@ public class Tests extends AbstractFactoryClient {
      * Should throw an OwnerNotRegisteredException.
      */
     @Test
-    public void loyaltyCardOperatorPointsPurchaseUnregistered(){
-        try{
-            operator.processMoneyPurchase(owner.getEmail(),8000);
+    public void loyaltyCardOperatorPointsPurchaseUnregistered() {
+        try {
+            operator.processMoneyPurchase(owner.getEmail(), 8000);
             fail("Should throw an OwnerNotRegisteredException");
-        }  catch(OwnerNotRegisteredException e){
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
         }
     }
 
     /**
      * Tests the centre case for counting the number of customers. Two have been registered, so
-     * two should be counted
+     * two should be counted.
      */
     @Test
-    public void loyaltyCardOperatorGetNumberOfCustomers(){
-        try{
+    public void loyaltyCardOperatorGetNumberOfCustomers() {
+        try {
             operator.registerOwner(owner);
-            assertEquals(operator.getNumberOfCustomers(),1);
+            assertEquals(operator.getNumberOfCustomers(), 1);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
-            assertEquals(operator.getNumberOfCustomers(),2);
+            assertEquals(operator.getNumberOfCustomers(), 2);
         }
-        catch(OwnerAlreadyRegisteredException e){
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
     }
 
     /**
-     * Tests the edge case of there being zero customers to count. Should return zero
+     * Tests the edge case of there being zero customers to count. Should return zero.
      */
     @Test
-    public void loyaltyCardOperatorGetZeroCustomers(){
-        assertEquals(operator.getNumberOfCustomers(),0);
-    }
-
-    /*
-     * Tests the edge case for registering owners where that owner has already been registered. Should
-     * return an OwnerAlreadyRegisteredException.
-     */
-    /*
-    @Test
-    public void loyaltyCardOperatorGetNumberOfCustomersDuplicate(){
-        try{
-            operator.registerOwner(owner);
-            operator.registerOwner(owner);
-            fail("Should throw OwnerAlreadyRegisteredException");
-        }
-        catch(OwnerAlreadyRegisteredException e){
-            assertEquals(operator.getNumberOfCustomers(),1);
-        }
-    }*/
-
-
-    /*
-     * Tests the centre case for 'getNumberOfPoints'. Owner has spend 1200 pence, so should receive
-     * 12 points.
-    @Test
-    public void loyaltyCardOperatorOwnerPoints(){
-        try{
-            operator.registerOwner(owner);
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            assertEquals(operator.getNumberOfPoints(owner.getEmail()),12);
-        } catch(OwnerNotRegisteredException e){
-            System.out.println(e.getMessage());
-            fail("Should not throw an exception");
-        } catch(OwnerAlreadyRegisteredException e){
-            System.out.println(e.getMessage());
-            fail("Should not throw an exception");
-        }
-    }*/
-
-    /**
-     * Tests the edge case of 'getNumberOfPoints' where the owner has not been registered. Should return
-     * an owner not registered exception.
-     */
-    @Test
-    public void loyaltyCardOperatorUnregisteredOwnerPoints(){
-        try{
-            operator.getNumberOfPoints(owner.getEmail());
-            fail("Should throw OwnerNotRegisteredException");
-        } catch(OwnerNotRegisteredException e){
-            System.out.println(e.getMessage());
-        }
+    public void loyaltyCardOperatorGetZeroCustomers() {
+        assertEquals(operator.getNumberOfCustomers(), 0);
     }
 
     /**
@@ -493,17 +501,25 @@ public class Tests extends AbstractFactoryClient {
      * total number of points is checked.
      */
     @Test
-    public void loyaltyCardOperatorGetTotalPoints(){
+    public void loyaltyCardOperatorGetTotalPoints() {
         try {
             operator.registerOwner(owner);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            operator.processMoneyPurchase("test2@test.com",3000);
-            assertEquals(operator.getTotalNumberOfPoints(),42);
-        } catch(OwnerAlreadyRegisteredException e){
+            operator.processMoneyPurchase(owner.getEmail(), 1200);
+            operator.processMoneyPurchase("test2@test.com", 3000);
+            assertEquals(operator.getTotalNumberOfPoints(), 42);
+            operator.processPointsPurchase(owner.getEmail(), 10);
+            assertEquals(operator.getTotalNumberOfPoints(), 32);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
+            System.out.println(e.getMessage());
+            fail("Should not throw an exception");
+        }
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -514,12 +530,13 @@ public class Tests extends AbstractFactoryClient {
      * been processed by the system, should return zero.
      */
     @Test
-    public void loyaltyCardOperatorGetZeroTotalPoints(){
+    public void loyaltyCardOperatorGetZeroTotalPoints() {
         try {
             operator.registerOwner(owner);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
-            assertEquals(operator.getTotalNumberOfPoints(),0);
-        } catch(OwnerAlreadyRegisteredException e){
+            assertEquals(operator.getTotalNumberOfPoints(), 0);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -527,11 +544,11 @@ public class Tests extends AbstractFactoryClient {
 
     /**
      * Tests the edge case in the total points are needed, but no cards
-     * have been registered. Should return zero
+     * have been registered. Should return zero.
      */
     @Test
-    public void loyaltyCardOperatorGetPointsNoCards(){
-        assertEquals(operator.getTotalNumberOfPoints(),0);
+    public void loyaltyCardOperatorGetPointsNoCards() {
+        assertEquals(operator.getTotalNumberOfPoints(), 0);
     }
 
     /**
@@ -539,22 +556,25 @@ public class Tests extends AbstractFactoryClient {
      * checked after each usage. Money and points are both used to check that both are included.
      */
     @Test
-    public void loyaltyCardOperatorGetUses(){
-        try{
+    public void loyaltyCardOperatorGetUses() {
+        try {
             operator.registerOwner(owner);
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
-            operator.processMoneyPurchase(owner.getEmail(),3000);
-            assertEquals(operator.getNumberOfUses(owner.getEmail()),2);
-            operator.processPointsPurchase(owner.getEmail(),25);
-            assertEquals(operator.getNumberOfUses(owner.getEmail()),3);
-        } catch(OwnerAlreadyRegisteredException e){
+            operator.processMoneyPurchase(owner.getEmail(), 1200);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()), 1);
+            operator.processMoneyPurchase(owner.getEmail(), 3000);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()), 2);
+            operator.processPointsPurchase(owner.getEmail(), 25);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()), 3);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(InsufficientPointsException e){
+        }
+        catch (InsufficientPointsException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -566,23 +586,27 @@ public class Tests extends AbstractFactoryClient {
      * exception but not increment uses after that.
      */
     @Test
-    public void loyaltyCardOperatorInsufficientPointsUses(){
-        try{
+    public void loyaltyCardOperatorInsufficientPointsUses() {
+        try {
             operator.registerOwner(owner);
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
-            operator.processPointsPurchase(owner.getEmail(),2500);
-        } catch(OwnerAlreadyRegisteredException e){
+            operator.processMoneyPurchase(owner.getEmail(), 1200);
+            assertEquals(operator.getNumberOfUses(owner.getEmail()), 1);
+            operator.processPointsPurchase(owner.getEmail(), 2500);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(InsufficientPointsException e){
-            try{
+        }
+        catch (InsufficientPointsException e) {
+            try {
                 System.out.println(e.getMessage());
-                assertEquals(operator.getNumberOfUses(owner.getEmail()),1);
-            } catch (OwnerNotRegisteredException d){
+                assertEquals(operator.getNumberOfUses(owner.getEmail()), 1);
+            }
+            catch (OwnerNotRegisteredException d) {
                 System.out.println(d.getMessage());
                 fail("Should not throw an exception");
             }
@@ -595,14 +619,16 @@ public class Tests extends AbstractFactoryClient {
      * recorded as zero.
      */
     @Test
-    public void loyaltyCardOperatorZeroTotalUses(){
-        try{
+    public void loyaltyCardOperatorZeroTotalUses() {
+        try {
             operator.registerOwner(owner);
             assertEquals(0, operator.getNumberOfUses(owner.getEmail()));
-        } catch(OwnerAlreadyRegisteredException e){
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -613,18 +639,20 @@ public class Tests extends AbstractFactoryClient {
      * should be returned.
      */
     @Test
-    public void loyaltyCardOperatorMostUsed(){
-        try{
+    public void loyaltyCardOperatorMostUsed() {
+        try {
             operator.registerOwner(owner);
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            operator.processMoneyPurchase(owner.getEmail(),3000);
+            operator.processMoneyPurchase(owner.getEmail(), 1200);
+            operator.processMoneyPurchase(owner.getEmail(), 3000);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
-            operator.processMoneyPurchase("test2@test.com",3000);
-            assertEquals(operator.getMostUsed(),owner);
-        } catch(OwnerAlreadyRegisteredException e){
+            operator.processMoneyPurchase("test2@test.com", 3000);
+            assertEquals(operator.getMostUsed(), owner);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -636,19 +664,21 @@ public class Tests extends AbstractFactoryClient {
      * order in an iterator. This suits the purposes of the program fine.
      */
     @Test
-    public void loyaltyCardOperatorMostUsedEqual(){
-        try{
+    public void loyaltyCardOperatorMostUsedEqual() {
+        try {
             operator.registerOwner(owner);
             operator.registerOwner(new LoyaltyCardOwner("TestTwo", "test2@test.com"));
-            operator.processMoneyPurchase("test2@test.com",3000);
-            operator.processMoneyPurchase("test2@test.com",3500);
-            operator.processMoneyPurchase(owner.getEmail(),1200);
-            operator.processMoneyPurchase(owner.getEmail(),3000);
-            assertEquals(operator.getMostUsed(),owner);
-        } catch(OwnerAlreadyRegisteredException e){
+            operator.processMoneyPurchase("test2@test.com", 3000);
+            operator.processMoneyPurchase("test2@test.com", 3500);
+            operator.processMoneyPurchase(owner.getEmail(), 1200);
+            operator.processMoneyPurchase(owner.getEmail(), 3000);
+            assertEquals(operator.getMostUsed(), owner);
+        }
+        catch (OwnerAlreadyRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
@@ -660,17 +690,21 @@ public class Tests extends AbstractFactoryClient {
      * cannot be compared to one another.
      */
     @Test
-    public void loyaltyCardOperatorMostUsedNoCards(){
-        try{
+    public void loyaltyCardOperatorMostUsedNoCards() {
+        try {
             assertNull(operator.getMostUsed());
-        } catch(OwnerNotRegisteredException e) {
+        }
+        catch (OwnerNotRegisteredException e) {
             System.out.println(e.getMessage());
             fail("Should not throw an exception");
         }
     }
 
+    /**
+     * Tests are finished, reassigning variables for cleanup.
+     */
     @After
-    public void tearDown(){
+    public void tearDown() {
         email = null;
         name = null;
         owner = null;

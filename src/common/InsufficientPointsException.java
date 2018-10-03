@@ -5,8 +5,13 @@ package common;
  *
  */
 public class InsufficientPointsException extends Exception {
-    String message;
-    public InsufficientPointsException(String message){
+    private String message;
+
+    /**
+     * Constructs a new instance of the exception.
+     * @param message A message for the user
+     */
+    public InsufficientPointsException(String message) {
         this.message = message;
     }
 
